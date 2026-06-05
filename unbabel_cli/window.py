@@ -19,7 +19,7 @@ def sliding_window_loop(starting_minute, final_minute, window_size, filtered_eve
             window_count -= 1
             sliding_window.popleft()
         
-        averages_list.append(compute_average_delivery_time(window_sum=window_sum, window_count=window_count))
+        averages_list.append({"date": current_minute, "average_delivery_time": compute_average_delivery_time(window_sum=window_sum, window_count=window_count)})
         current_minute += 60
     return averages_list
 
