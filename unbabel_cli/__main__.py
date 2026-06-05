@@ -1,48 +1,12 @@
-from parser import parse_from_cli, load_translation_events
-import datetime
-from collections import deque
-
-def clean_data(events_list: list) -> list:
-    wanted_keys = ["timestamp", "duration"]
-    filtered_events_list = deque({key: event_dict[key] for key in wanted_keys} for event_dict in events_list)
-
-    for event_dict in filtered_events_list:
-        event_dict["timestamp"] = timestamp_to_unix(event_dict["timestamp"])
-
-    return filtered_events_list
-
-def timestamp_to_unix(timestamp: str) -> float:
-    dt = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S.%f") #%f represents microseconds
-    return dt.replace(tzinfo=datetime.timezone.utc).timestamp() #assuming utc timezone to assure consistency in results between different machines
-
-def unix_to_timestamp(unix: float) -> str:
-    dt = datetime.datetime.fromtimestamp(unix, tz=datetime.timezone.utc)
-    return dt.strftime("%Y-%m-%d %H:%M:%S.%f")
-
-def floor_to_minutes(unix: float) -> float:
-    return int(unix) // 60 * 60   #do floor division to obtain last "whole" minute and then back to a valid unix value
+from parser import parse_from_cli, load_translation_events, filter_events_list
+from solution import sliding_window_loop
 
 def main():
+
     args = parse_from_cli()
     translation_events = load_translation_events(file_location=args.input_file)
-    filtered_events = clean_data(events_list=translation_events)
-    first_min = floor_to_minutes(filtered_events[0]["timestamp"])
-    last_min = floor_to_minutes(filtered_events[-1]["timestamp"]) + 60
-    window_size_unix = args.window_size*60
-
-
-    current = first_min
-    sliding_window = deque()
-    while current <= last_min:
-        while filtered_events and filtered_events[0]["timestamp"]>=current-window_size_unix and filtered_events[0]["timestamp"]<current:
-            sliding_window.append(filtered_events[0])
-            filtered_events.popleft()
-
-        while sliding_window and (sliding_window[0]["timestamp"] < current-window_size_unix or sliding_window[0]["timestamp"] >= current):
-            sliding_window.popleft()
-        
-        current += 60
-  
+    filtered_events, starting_minute, final_minute = filter_events_list(events_list=translation_events)
+    sliding_window_loop(starting_minute=starting_minute, final_minute=final_minute, window_size= args.window_size, filtered_events=filtered_events)
 
 if __name__ == "__main__":
     main()
