@@ -1,5 +1,5 @@
 from parser import parse_from_cli, load_translation_events, filter_events_list
-from solution import sliding_window_loop
+from window import sliding_window_loop
 
 def main():
 
