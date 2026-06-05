@@ -34,21 +34,15 @@ def main():
     current = first_min
     sliding_window = deque()
     while current <= last_min:
-        for event in list(filtered_events): #cant iterate over deque if we change it mid loop
-            if event["timestamp"]>=current-window_size_unix and event["timestamp"]<current:
-                sliding_window.append(event)
-                filtered_events.popleft()
-            else: 
-                break #since elements are ordered, if one is outside of the window the following should to 
+        while filtered_events and filtered_events[0]["timestamp"]>=current-window_size_unix and filtered_events[0]["timestamp"]<current:
+            sliding_window.append(filtered_events[0])
+            filtered_events.popleft()
 
-        for event in list(sliding_window): 
-            if event["timestamp"] < current-window_size_unix or event["timestamp"] >= current:
-                sliding_window.popleft()
-            else:
-                break #if an event is inside the window, then the rest will also be 
+        while sliding_window and (sliding_window[0]["timestamp"] < current-window_size_unix or sliding_window[0]["timestamp"] >= current):
+            sliding_window.popleft()
+        
         current += 60
   
-
 
 if __name__ == "__main__":
     main()
