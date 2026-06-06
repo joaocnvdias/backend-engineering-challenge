@@ -26,4 +26,7 @@ def filter_events_list(events_list: list) -> list:
     for event_dict in filtered_events_list:
         event_dict["timestamp"] = timestamp_to_unix(event_dict["timestamp"])
 
-    return filtered_events_list, floor_to_minutes(filtered_events_list[0]["timestamp"]), floor_to_minutes(filtered_events_list[-1]["timestamp"]) 
+    return filtered_events_list
+
+def get_boundary_timestamps(events_list: list) -> tuple:
+    return floor_to_minutes(events_list[0]["timestamp"]), floor_to_minutes(events_list[-1]["timestamp"]) 
