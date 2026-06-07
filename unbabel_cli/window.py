@@ -23,7 +23,7 @@ def sliding_window_loop(starting_minute, final_minute, window_size, filtered_eve
         current_minute += 60
     return averages_list
 
-def compute_average_delivery_time(window_sum, window_count):
+def compute_average_delivery_time(window_sum: int, window_count: int) -> float:
     if window_count != 0:
         return window_sum/window_count
     else:

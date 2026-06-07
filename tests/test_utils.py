@@ -8,7 +8,7 @@ def sample_timestamp():
 class TestUtils:
 
     @pytest.mark.parametrize(
-    "timestamp,expected",
+    "timestamp, expected",
     [
         pytest.param("2018-12-26 18:11:08.000000", "2018-12-26 18:11:00.000000", id="simple_seconds"),
         pytest.param("2018-12-26 18:11:08.509654", "2018-12-26 18:11:00.000000", id="microseconds"),
