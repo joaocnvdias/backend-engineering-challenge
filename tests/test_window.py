@@ -24,16 +24,6 @@ def exact_minutes_events():
     )
 
 @pytest.fixture
-def filtered_events_unordered():
-    return deque(
-        [
-            {'timestamp': 1545847868.509654, 'duration': 20}, 
-            {'timestamp': 1545848599.903159, 'duration': 54}, 
-            {'timestamp': 1545848119.903159, 'duration': 31}
-        ]
-    )
-
-@pytest.fixture
 def expected_loop_output():
     return [
         {'date': 1545847860.0, 'average_delivery_time': 0}, 
@@ -64,7 +54,7 @@ class TestWindow:
     def test_output_rows_have_correct_keys(self, filtered_events):
         starting_minute, final_minute = get_boundary_timestamps(events_list=filtered_events)
         window_size = 10
-        
+
         result = sliding_window_loop(starting_minute, final_minute, window_size, filtered_events)
 
         for row in result:
@@ -109,4 +99,4 @@ class TestWindow:
         starting_minute, final_minute = get_boundary_timestamps(events_list=exact_minutes_events)
         window_size = 1
         result = sliding_window_loop(starting_minute, final_minute, window_size, filtered_events)
-        assert result[2]["average_delivery_time"] == 0 #i0: 18:11 (0), i1: 18:12 (20), i2: 18:13 expired - 0
+        assert result[2]["average_delivery_time"] == 0 #i0: 18:11 (0), i1: 18:12 (20), i2: 18:13 expired - 0      
