@@ -29,6 +29,15 @@ def iter_translation_events(file_location: str):
         for line in f:
             yield json.loads(line) #load event 1 by 1 
 
+def validate_input_lines(events: list):
+    for event in events:
+        if not isinstance(event,dict):
+            raise TypeError("File includes invalid line")
+        if "timestamp" not in event:
+            raise KeyError("File includes line without timestamp key")
+        if "duration" not in event:
+            raise KeyError("File includes invalid line without duration key")
+
 def iter_and_filter_events(events: list):
 
     for event in events: 
