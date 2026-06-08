@@ -30,7 +30,7 @@ class TestCLIRaisesError:
                 validate_args(args)
     
     def test_missing_input_file(self):
-        """--input_file pointing to nonexistent file should raise FileNotFoundError"""
+        """--input_file to nonexistent file should raise FileNotFoundError"""
         with patch("sys.argv", ["unbabel_cli", "--input_file", "not_a_file_100_percent.jsonl", "--window_size", "10"]):
             args = parse_from_cli()
             with pytest.raises(FileNotFoundError, match= "Input file not found"):
@@ -58,7 +58,6 @@ class TestParser:
 
     def test_load_translation_events_preserves_data_structure(self, tmp_path):
         file = tmp_path / "events.json"
-
         file.write_text(
             '\n'.join([
                 '{"timestamp": "2018-12-26 18:11:08.509654","translation_id": "5aa5b2f39f7254a75aa5","source_language": "en","target_language": "fr","client_name": "airliberty","event_name": "translation_delivered","nr_words": 30, "duration": 20}',
@@ -74,7 +73,6 @@ class TestParser:
     
     def test_load_translation_events_preserves_order(self, tmp_path):
         file = tmp_path / "events.json"
-
         file.write_text(
             '\n'.join([
                 '{"timestamp": "2018-12-26 18:11:08.509654","translation_id": "5aa5b2f39f7254a75aa5","source_language": "en","target_language": "fr","client_name": "airliberty","event_name": "translation_delivered","nr_words": 30, "duration": 20}',
@@ -89,6 +87,7 @@ class TestParser:
         assert second["timestamp"] == "2018-12-26 18:15:19.903159"
 
     def test_unix_transformation_in_filtering(self, sample_event):
+        """Make sure unix transformation is correct using hard-coded result"""
         filtered_event = iter_and_filter_events([sample_event])
 
         event = next(filtered_event)
@@ -97,12 +96,16 @@ class TestParser:
 
     def test_filtered_keys(self, sample_event):
         filtered_event = iter_and_filter_events([sample_event])        
-        wanted_keys = ["timestamp", "duration"]
         event = next(filtered_event)
+        wanted_keys = ["timestamp", "duration"]
 
         assert list(event.keys()) == wanted_keys
     
     def test_input_file_invalid_format(self,tmp_path):
+        """
+        If the input file has a not-json-object it should raise an error, 
+        as long as the flag ignore_invalid is False
+        """
         invalid_events = [
             '{"timestamp": "2018-12-26 18:11:08.509654", "translation_id": "5aa5b2f39f7254a75aa5", "source_language": "en", "target_language": "fr", "client_name": "airliberty", "event_name": "translation_delivered", "nr_words": 30, "duration": 20}',
             '2',
@@ -116,6 +119,10 @@ class TestParser:
             list(iter_validate_input_lines(events = events, ignore_invalid= False))
     
     def test_input_file_invalid_key_timestamp(self,tmp_path):
+        """
+        If the input file has a json-object without the needed keys it should raise an error, 
+        as long as the flag ignore_invalid is False
+        """
         invalid_events = [
             '{"translation_id": "5aa5b2f39f7254a75aa5", "source_language": "en", "target_language": "fr", "client_name": "airliberty", "event_name": "translation_delivered", "nr_words": 30, "duration": 20}',
             '{"duration": 35}'
@@ -128,6 +135,10 @@ class TestParser:
             list(iter_validate_input_lines(events = events, ignore_invalid= False))
     
     def test_input_file_invalid_key_duration(self,tmp_path):
+        """
+        If the input file has a json-object without the needed keys it should raise an error, 
+        as long as the flag ignore_invalid is False
+        """
         invalid_events = [
             '{"timestamp": "2018-12-26 18:11:08.509654", "translation_id": "5aa5b2f39f7254a75aa5", "source_language": "en", "target_language": "fr", "client_name": "airliberty", "event_name": "translation_delivered", "nr_words": 30}',
             '{"timestamp": "2018-12-26 18:23:19.903159", "translation_id": "5aa5b2f39f7254a75bb3", "source_language": "en", "target_language": "fr", "client_name": "taxi-eats", "event_name": "translation_delivered", "nr_words": 100}'

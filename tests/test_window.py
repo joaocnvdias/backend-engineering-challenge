@@ -45,7 +45,7 @@ class TestWindow:
         assert compute_average_delivery_time(window_sum=100, window_count=4) == 25.0
 
     def test_average_zero_count_returns_zero(self):
-        """An empty window must return 0, not raise ZeroDivisionError."""
+        """An empty window must return 0 not raise ZeroDivisionError."""
         assert compute_average_delivery_time(window_sum=0, window_count=0) == 0
 
     def test_output_rows_have_correct_keys(self, filtered_events):
@@ -55,11 +55,9 @@ class TestWindow:
         assert set(event.keys()) == {"date", "average_delivery_time"}
 
     def test_window_loop_length(self, filtered_events, expected_loop_output):
-        """
-        Output must cover every minute from starting_minute to final_minute+1 minute.
-        """
+        """Output must cover every minute from starting_minute to final_minute+1 minute."""
         window_size = 10
-        result = list(iter_sliding_window_loop(window_size, filtered_events))  #drain generator
+        result = list(iter_sliding_window_loop(window_size, filtered_events)) #drain generator
         assert len(result) == len(expected_loop_output) 
 
     def test_loop_example_result(self, filtered_events, expected_loop_output):
@@ -78,9 +76,7 @@ class TestWindow:
         assert result == expected_loop_output
 
     def test_event_expires_after_window(self, filtered_events):
-        """
-        With window_size=1, an event at minute M must not appear at minute M+2.
-        """
+        """With window_size=1, an event at minute M must not appear at minute M+2."""
         window_size = 1
         result = iter_sliding_window_loop(window_size, filtered_events)
         i0 = next(result)
