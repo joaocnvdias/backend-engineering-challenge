@@ -2,11 +2,14 @@ import argparse
 import json
 from utils import timestamp_to_unix, floor_to_minutes
 
-def parse_from_cli():
+def parse_from_cli() -> list:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_file", type=str, help="Input file location with translation events")
     parser.add_argument("--window_size", type=int, help="Temporal window size for computing average delivery time")
     return parser.parse_args()
+
+def validate_args(args: list):
+    return
 
 def iter_translation_events(file_location: str):
 
@@ -21,6 +24,3 @@ def iter_and_filter_events(events: list):
             "timestamp": timestamp_to_unix(event["timestamp"]),
             "duration": event["duration"]
         }
-
-def get_boundary_timestamps(events_list: list) -> tuple:
-    return floor_to_minutes(events_list[0]["timestamp"]), floor_to_minutes(events_list[-1]["timestamp"]) 

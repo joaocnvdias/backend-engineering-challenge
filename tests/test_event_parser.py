@@ -1,6 +1,6 @@
 import pytest
+from unittest.mock import patch
 from event_parser import *
-from utils import timestamp_to_unix
 
 @pytest.fixture
 def sample_event():
@@ -58,7 +58,46 @@ class TestParser:
 
     def test_filtered_keys(self, sample_event):
         filtered_event = iter_and_filter_events([sample_event])        
-        wanted_keys = {"timestamp", "duration"}
+        wanted_keys = ["timestamp", "duration"]
         event = next(filtered_event)
 
-        assert list(event.keys()) == ["timestamp", "duration"]
+        assert list(event.keys()) == wanted_keys
+
+class TestCLIRaisesError:
+
+    def test_missing_input_file(self):
+        """--input_file pointing to nonexistent file should raise FileNotFoundError"""
+        with patch("sys.argv", ["unbabel_cli", "--input_file", "not_a_file_100_percent.jsonl", "--window_size", "10"]):
+            args = parse_from_cli()
+            with pytest.raises(FileNotFoundError, match= "Input file not found"):
+                validate_args(args)  # whatever your validation function ends up being called
+
+    def test_negative_and_zero_window_size(self):
+        """--window_size <= 0 should raise ValueError"""
+        with patch("sys.argv", ["unbabel_cli", "--input_file", "events.jsonl", "--window_size", "-1"]):
+            args = parse_from_cli()
+            with pytest.raises(ValueError, match="window_size must be >= 1"):
+                validate_args(args)
+
+        with patch("sys.argv", ["unbabel_cli", "--input_file", "events.jsonl", "--window_size", "0"]):
+            args = parse_from_cli()
+            with pytest.raises(ValueError, match="window_size must be >= 1"):
+                validate_args(args)
+
+    def test_empty_input_file(self, tmp_path):
+        """an empty file should raise a ValueError"""
+        empty_file = tmp_path / "empty.jsonl"
+        empty_file.write_text("")
+        with patch("sys.argv", ["unbabel_cli", "--input_file", str(empty_file), "--window_size", "10"]):
+            args = parse_from_cli()
+            with pytest.raises(ValueError, match="Input file is empty"):
+                validate_args(args)
+
+    def test_empty_jsonl_file(self, tmp_path):
+        """a file with only blank lines shouldbe treated as empty"""
+        blank_file = tmp_path / "blank.jsonl"
+        blank_file.write_text("\n\n\n")
+        with patch("sys.argv", ["unbabel_cli", "--input_file", str(blank_file), "--window_size", "10"]):
+            args = parse_from_cli()
+            with pytest.raises(ValueError, match="Input file is empty"):
+                validate_args(args)
