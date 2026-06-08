@@ -1,6 +1,7 @@
 import argparse
 import json
-from utils import timestamp_to_unix, floor_to_minutes
+import os
+from utils import timestamp_to_unix
 
 def parse_from_cli() -> list:
     parser = argparse.ArgumentParser()
@@ -9,7 +10,15 @@ def parse_from_cli() -> list:
     return parser.parse_args()
 
 def validate_args(args: list):
-    return
+    if args.window_size <= 0:
+        raise ValueError("window_size must be >= 1")
+
+    if not os.path.exists(args.input_file):
+        raise FileNotFoundError("Input file not found")
+    
+    with open(args.input_file, "r") as f:
+        if not any(line.strip() for line in f):
+            raise ValueError("Input file is empty")
 
 def iter_translation_events(file_location: str):
 

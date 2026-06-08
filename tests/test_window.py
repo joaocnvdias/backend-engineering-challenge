@@ -1,7 +1,6 @@
 import pytest
 from collections import deque
 from window import *
-from event_parser import get_boundary_timestamps
 
 @pytest.fixture
 def filtered_events():

@@ -65,13 +65,6 @@ class TestParser:
 
 class TestCLIRaisesError:
 
-    def test_missing_input_file(self):
-        """--input_file pointing to nonexistent file should raise FileNotFoundError"""
-        with patch("sys.argv", ["unbabel_cli", "--input_file", "not_a_file_100_percent.jsonl", "--window_size", "10"]):
-            args = parse_from_cli()
-            with pytest.raises(FileNotFoundError, match= "Input file not found"):
-                validate_args(args)  # whatever your validation function ends up being called
-
     def test_negative_and_zero_window_size(self):
         """--window_size <= 0 should raise ValueError"""
         with patch("sys.argv", ["unbabel_cli", "--input_file", "events.jsonl", "--window_size", "-1"]):
@@ -82,6 +75,13 @@ class TestCLIRaisesError:
         with patch("sys.argv", ["unbabel_cli", "--input_file", "events.jsonl", "--window_size", "0"]):
             args = parse_from_cli()
             with pytest.raises(ValueError, match="window_size must be >= 1"):
+                validate_args(args)
+    
+    def test_missing_input_file(self):
+        """--input_file pointing to nonexistent file should raise FileNotFoundError"""
+        with patch("sys.argv", ["unbabel_cli", "--input_file", "not_a_file_100_percent.jsonl", "--window_size", "10"]):
+            args = parse_from_cli()
+            with pytest.raises(FileNotFoundError, match= "Input file not found"):
                 validate_args(args)
 
     def test_empty_input_file(self, tmp_path):
