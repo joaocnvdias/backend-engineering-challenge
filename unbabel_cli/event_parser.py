@@ -9,7 +9,7 @@ def parse_from_cli() -> list:
     parser.add_argument("--input_file", required = True, type=str, help="Input file location with translation events")
     parser.add_argument("--window_size", required = True, type=int, help="Temporal window size for computing average delivery time")
 
-    parser.add_argument("--output_file_location", required= False, type=str, default="data/output1.jsonl" ,help = "Desired output file location and name, including file suffix (use .jsonl)")
+    parser.add_argument("--output_file_location", required= False, type=str, default="data/output.jsonl" ,help = "Desired output file location and name, including file suffix (use .jsonl)")
     parser.add_argument("--ignore_invalid_line", required=False, action="store_true", help = "When passed, this flag makes the program ignore invalid lines in the input file instead of stopping at an error")
     return parser.parse_args()
 
