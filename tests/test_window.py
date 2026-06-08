@@ -5,23 +5,21 @@ from event_parser import get_boundary_timestamps
 
 @pytest.fixture
 def filtered_events():
-    return deque(
-        [
-            {'timestamp': 1545847868.509654, 'duration': 20}, 
-            {'timestamp': 1545848119.903159, 'duration': 31}, 
-            {'timestamp': 1545848599.903159, 'duration': 54}
+    events =[
+        {'timestamp': 1545847868.509654, 'duration': 20}, 
+        {'timestamp': 1545848119.903159, 'duration': 31}, 
+        {'timestamp': 1545848599.903159, 'duration': 54}
         ]
-    )
+    return iter(events)
 
 @pytest.fixture
 def exact_minutes_events():
-    return deque(
-        [
-            {'timestamp': 1545847860.0, 'duration': 20},
-            {'timestamp': 1545848100.0, 'duration': 31}, 
-            {'timestamp': 1545848580.0, 'duration': 54}
+    events = [
+        {'timestamp': 1545847860.0, 'duration': 20},
+        {'timestamp': 1545848100.0, 'duration': 31}, 
+        {'timestamp': 1545848580.0, 'duration': 54}
         ]
-    )
+    return iter(events)
 
 @pytest.fixture
 def expected_loop_output():
@@ -52,32 +50,22 @@ class TestWindow:
         assert compute_average_delivery_time(window_sum=0, window_count=0) == 0
 
     def test_output_rows_have_correct_keys(self, filtered_events):
-        starting_minute, final_minute = get_boundary_timestamps(events_list=filtered_events)
         window_size = 10
+        result = iter_sliding_window_loop(window_size, filtered_events)
+        event = next(result)
+        assert set(event.keys()) == {"date", "average_delivery_time"}
 
-        result = sliding_window_loop(starting_minute, final_minute, window_size, filtered_events)
-
-        for row in result:
-            assert set(row.keys()) == {"date", "average_delivery_time"}
-
-    def test_window_loop_length(self, filtered_events):
+    def test_window_loop_length(self, filtered_events, expected_loop_output):
         """
         Output must cover every minute from starting_minute to final_minute+1 minute.
         """
-        starting_minute, final_minute = get_boundary_timestamps(events_list=filtered_events)
         window_size = 10
-
-        result = sliding_window_loop(starting_minute, final_minute, window_size, filtered_events)
-        
-        expected_rows = int((final_minute - starting_minute)) // 60 + 1 + 1 #60 for minutes, +1 for count and +1 for minute after the count
-        assert len(result) == expected_rows
+        result = list(iter_sliding_window_loop(window_size, filtered_events))  #drain generator
+        assert len(result) == len(expected_loop_output) 
 
     def test_loop_example_result(self, filtered_events, expected_loop_output):
-        starting_minute, final_minute = get_boundary_timestamps(events_list=filtered_events)
         window_size = 10
-
-        result = sliding_window_loop(starting_minute, final_minute, window_size, filtered_events)
-        
+        result = list(iter_sliding_window_loop(window_size, filtered_events))
         assert result == expected_loop_output
  
     def test_loop_exact_minutes_result(self, exact_minutes_events, expected_loop_output):
@@ -85,18 +73,21 @@ class TestWindow:
         In this solution, exact minutes should not count for that minute.
         Example: Input: "timestamp": "2018-12-26 18:23:00.000000" belongs in Output: "date": "2018-12-26 18:13:00" but not in "2018-12-26 18:23:00"
         """
-        starting_minute, final_minute = get_boundary_timestamps(events_list=exact_minutes_events)
         window_size = 10
-
-        result = sliding_window_loop(starting_minute, final_minute, window_size, exact_minutes_events)
+        result = list(iter_sliding_window_loop(window_size, exact_minutes_events))
 
         assert result == expected_loop_output
 
-    def test_event_expires_after_window(self, filtered_events, exact_minutes_events):
+    def test_event_expires_after_window(self, filtered_events):
         """
         With window_size=1, an event at minute M must not appear at minute M+2.
         """
-        starting_minute, final_minute = get_boundary_timestamps(events_list=exact_minutes_events)
         window_size = 1
-        result = sliding_window_loop(starting_minute, final_minute, window_size, filtered_events)
-        assert result[2]["average_delivery_time"] == 0 #i0: 18:11 (0), i1: 18:12 (20), i2: 18:13 expired - 0      
+        result = iter_sliding_window_loop(window_size, filtered_events)
+        i0 = next(result)
+        i1 = next(result)
+        i2 = next(result)
+        #i0: 18:11 (0), i1: 18:12 (20), i2: 18:13 expired - 0      
+        assert i0["average_delivery_time"] == 0 
+        assert i1["average_delivery_time"] == 20
+        assert i2["average_delivery_time"] == 0 
