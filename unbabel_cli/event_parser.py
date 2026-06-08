@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import sys
 from utils import timestamp_to_unix
 
 def parse_from_cli() -> list:
@@ -29,14 +30,24 @@ def iter_translation_events(file_location: str):
         for line in f:
             yield json.loads(line) #load event 1 by 1 
 
-def validate_input_lines(events: list):
-    for event in events:
-        if not isinstance(event,dict):
-            raise TypeError("File includes invalid line")
-        if "timestamp" not in event:
-            raise KeyError("File includes line without timestamp key")
-        if "duration" not in event:
-            raise KeyError("File includes invalid line without duration key")
+def iter_validate_input_lines(events: list, ignore_invalid: bool):
+    for i, event in enumerate(events, start=1):
+        try:
+            validate_event(event)
+        except (TypeError, KeyError) as e:
+            if ignore_invalid:
+                print(f"Skipping line number {i}: {e}", file=sys.stderr)
+                continue
+            raise
+        yield event
+
+def validate_event(event):
+    if not isinstance(event, dict):
+        raise TypeError("File includes invalid line, expected a JSON object")
+    if "timestamp" not in event:
+        raise KeyError("File includes a line with a JSON object without the 'timestamp' key")
+    if "duration" not in event:
+        raise KeyError("File includes a line with a JSON object without the 'duration' key")
 
 def iter_and_filter_events(events: list):
 

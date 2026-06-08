@@ -112,8 +112,8 @@ class TestParser:
         file.write_text("\n".join(invalid_events))
         events = iter_translation_events(file)
 
-        with pytest.raises(TypeError, match = "File includes invalid line"):
-            validate_input_lines(events)
+        with pytest.raises(TypeError, match = "File includes invalid line, expected a JSON object"):
+            list(iter_validate_input_lines(events = events, ignore_invalid= False))
     
     def test_input_file_invalid_key_timestamp(self,tmp_path):
         invalid_events = [
@@ -124,8 +124,8 @@ class TestParser:
         file.write_text("\n".join(invalid_events))
         events = iter_translation_events(file)
 
-        with pytest.raises(KeyError, match = "File includes line without timestamp key"):
-            validate_input_lines(events)
+        with pytest.raises(KeyError, match = "File includes a line with a JSON object without the 'timestamp' key"):
+            list(iter_validate_input_lines(events = events, ignore_invalid= False))
     
     def test_input_file_invalid_key_duration(self,tmp_path):
         invalid_events = [
@@ -136,5 +136,5 @@ class TestParser:
         file.write_text("\n".join(invalid_events))
         events = iter_translation_events(file)
 
-        with pytest.raises(KeyError, match = "File includes invalid line without duration key"):
-            validate_input_lines(events)
+        with pytest.raises(KeyError, match = "File includes a line with a JSON object without the 'duration' key"):
+            list(iter_validate_input_lines(events = events, ignore_invalid= False))
