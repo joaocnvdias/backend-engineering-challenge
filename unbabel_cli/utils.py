@@ -14,9 +14,8 @@ def unix_to_timestamp(unix: float, output = False) -> str:
 def floor_to_minutes(unix: float) -> float:
     return int(unix) // 60 * 60   #do floor division to obtain last "whole" minute and then back to a valid unix value
 
-def save_results_to_file(file_name, results):    
-    file_location = "data/" + file_name + ".jsonl"
-    with open(file_location, 'w') as f:
+def save_results_to_file(output_path, results):    
+    with open(output_path, 'w') as f:
         for result in results:
             result["date"] = unix_to_timestamp(unix=result["date"], output=True)
             f.write(json.dumps(result) + "\n")
