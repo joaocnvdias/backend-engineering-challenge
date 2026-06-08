@@ -45,7 +45,6 @@ class TestMain:
         assert len(result) == len(self.README_EXPECTED)
 
     def test_readme_example_averages(self, tmp_path, readme_events_file):
-        """Every average must exactly match the README's expected output."""
         window_size = 10
         output_path = tmp_path / "output.jsonl"
 

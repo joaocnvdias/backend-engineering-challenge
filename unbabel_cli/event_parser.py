@@ -5,8 +5,11 @@ from utils import timestamp_to_unix
 
 def parse_from_cli() -> list:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_file", type=str, help="Input file location with translation events")
-    parser.add_argument("--window_size", type=int, help="Temporal window size for computing average delivery time")
+    parser.add_argument("--input_file", required = True, type=str, help="Input file location with translation events")
+    parser.add_argument("--window_size", required = True, type=int, help="Temporal window size for computing average delivery time")
+
+    parser.add_argument("--output_file_location", required= False, type=str, default="data/output1.jsonl" ,help = "Desired output file location and name, including file suffix (use .jsonl)")
+    parser.add_argument("--ignore_invalid_line", required=False, action="store_true", help = "When passed, this flag makes the program ignore invalid lines in the input file instead of stopping at an error")
     return parser.parse_args()
 
 def validate_args(args: list):
@@ -16,8 +19,8 @@ def validate_args(args: list):
     if not os.path.exists(args.input_file):
         raise FileNotFoundError("Input file not found")
     
-    with open(args.input_file, "r") as f:
-        if not any(line.strip() for line in f):
+    with open(args.input_file, "r") as f: 
+        if not any(line.strip() for line in f): #file is empty or only has newline chars
             raise ValueError("Input file is empty")
 
 def iter_translation_events(file_location: str):
