@@ -26,11 +26,13 @@ class TestParser:
             ])
         )
 
-        events = load_translation_events(file)
+        events = iter_translation_events(file)
 
-        assert isinstance(events, list) 
-        assert isinstance(events[0], dict)
- 
+        first = next(events) 
+        assert isinstance(first, dict)
+        assert first["timestamp"] == "2018-12-26 18:11:08.509654"
+        assert first["duration"] == 20
+    
     def test_load_translation_events_preserves_order(self, tmp_path):
         file = tmp_path / "events.json"
 
@@ -41,20 +43,22 @@ class TestParser:
             ])
         )
 
-        events = load_translation_events(file)
-
-        assert len(events) == 2
-        assert events[0]["timestamp"] == "2018-12-26 18:11:08.509654"
-        assert events[1]["timestamp"] == "2018-12-26 18:15:19.903159"
+        events = iter_translation_events(file)
+        first = next(events) 
+        second = next(events)
+        assert first["timestamp"] == "2018-12-26 18:11:08.509654"
+        assert second["timestamp"] == "2018-12-26 18:15:19.903159"
 
     def test_unix_transformation_in_filtering(self, sample_event):
-        filtered_event = filter_events_list([sample_event])
+        filtered_event = iter_and_filter_events([sample_event])
 
-        assert isinstance(filtered_event[0]["timestamp"], float)
-        assert filtered_event[0]["timestamp"] == 1545847868.509654  # expected unix value
+        event = next(filtered_event)
+        assert isinstance(event["timestamp"], float)
+        assert event["timestamp"] == 1545847868.509654  # expected unix value
 
     def test_filtered_keys(self, sample_event):
-        filtered_event = filter_events_list([sample_event])        
+        filtered_event = iter_and_filter_events([sample_event])        
         wanted_keys = {"timestamp", "duration"}
+        event = next(filtered_event)
 
-        assert list(filtered_event[0].keys()) == ["timestamp", "duration"]
+        assert list(event.keys()) == ["timestamp", "duration"]

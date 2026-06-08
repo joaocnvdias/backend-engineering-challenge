@@ -49,8 +49,8 @@ We must define if the outer limits of this interval are inclusive or not. This i
 {"timestamp": "2018-12-26 18:15:00.000000","translation_id": "5aa5b2f39f7254a75aa4","source_language": "en","target_language": "fr","client_name": "airliberty","event_name": "translation_delivered","nr_words": 30, "duration": 31}
 {"timestamp": "2018-12-26 18:23:00.000000","translation_id": "5aa5b2f39f7254a75bb3","source_language": "en","target_language": "fr","client_name": "taxi-eats","event_name": "translation_delivered","nr_words": 100, "duration": 54}
 ```
-- With $[\text{current\_minute} - X;\text{current\_minute}[$, an event at exactly `18:11:00` falls outside the first window `[18:01, 18:11)`, producing an average of 0, which is consistent with the example provided by the project design team. Furthermore, for the last entry in the output, the same could be said, as long as the last timestamp is the minute after the last translation event. 
+- With $[\text{current\_minute} - X;\text{current\_minute}[$, an event at exactly `18:11:00` falls outside the first window `[18:01, 18:11[`, producing an average of 0, which is consistent with the example provided by the project design team. Furthermore, for the last entry in the output, the same could be said, as long as the last timestamp is the minute after the last translation event. 
 
-**NOTE:** Had we adopted $]\text{current\_minute} - X;\text{current\_minute}]$, the first event would fall inside the first window `(18:01, 18:11]`, therefore being included in the average of `18:11:00`. 
+**NOTE:** Had we adopted $]\text{current\_minute} - X;\text{current\_minute}]$, the first event would fall inside the first window `]18:01, 18:11]`, therefore being included in the average of `18:11:00`. 
 
 ### Average Delivery Time Calculation
