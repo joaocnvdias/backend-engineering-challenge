@@ -1,6 +1,5 @@
 import argparse
 import json
-from collections import deque
 from utils import timestamp_to_unix, floor_to_minutes
 
 def parse_from_cli():

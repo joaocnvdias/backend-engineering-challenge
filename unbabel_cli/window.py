@@ -1,5 +1,5 @@
 from collections import deque
-from utils import floor_to_minutes, unix_to_timestamp
+from utils import floor_to_minutes
 
 def iter_sliding_window_loop(window_size, filtered_events):
     window_size_unix = window_size * 60 #we work with seconds
@@ -14,7 +14,6 @@ def iter_sliding_window_loop(window_size, filtered_events):
             current_minute = floor_to_minutes(event["timestamp"])
 
         while current_minute <= event["timestamp"]: 
-            print(f"Event: {event}, minute: {unix_to_timestamp(current_minute)}, average: {compute_average_delivery_time(window_sum = window_sum, window_count=window_count)}")
             yield {                        
                 "date": current_minute,
                 "average_delivery_time": compute_average_delivery_time(window_sum = window_sum, window_count=window_count)
