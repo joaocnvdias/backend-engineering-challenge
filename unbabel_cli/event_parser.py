@@ -9,24 +9,19 @@ def parse_from_cli():
     parser.add_argument("--window_size", type=int, help="Temporal window size for computing average delivery time")
     return parser.parse_args()
 
-def load_translation_events(file_location: str) -> list:
-    translation_events = []
+def iter_translation_events(file_location: str):
 
     with open(file_location, "r", encoding="utf-8") as f:
         for line in f:
-            event = json.loads(line)
-            translation_events.append(event) #keeps order
+            yield json.loads(line) #load event 1 by 1 
 
-    return translation_events
+def iter_and_filter_events(events: list):
 
-def filter_events_list(events_list: list) -> list:
-    wanted_keys = ["timestamp", "duration"]
-    filtered_events_list = deque({key: event_dict[key] for key in wanted_keys} for event_dict in events_list)
-
-    for event_dict in filtered_events_list:
-        event_dict["timestamp"] = timestamp_to_unix(event_dict["timestamp"])
-
-    return filtered_events_list
+    for event in events: 
+        yield {
+            "timestamp": timestamp_to_unix(event["timestamp"]),
+            "duration": event["duration"]
+        }
 
 def get_boundary_timestamps(events_list: list) -> tuple:
     return floor_to_minutes(events_list[0]["timestamp"]), floor_to_minutes(events_list[-1]["timestamp"]) 
