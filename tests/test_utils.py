@@ -1,4 +1,4 @@
-from utils import * 
+from unbabel_cli.utils import * 
 import pytest 
 
 @pytest.fixture

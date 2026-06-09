@@ -1,8 +1,8 @@
 import pytest
 import json
-from utils import *
-from window import * 
-from event_parser import * 
+from unbabel_cli.utils import *
+from unbabel_cli.window import * 
+from unbabel_cli.event_parser import * 
 
 @pytest.fixture
 def readme_events_file(tmp_path):

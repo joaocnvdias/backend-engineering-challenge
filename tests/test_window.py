@@ -1,6 +1,6 @@
 import pytest
 from collections import deque
-from window import *
+from unbabel_cli.window import *
 
 @pytest.fixture
 def filtered_events():

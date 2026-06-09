@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from event_parser import *
+from unbabel_cli.event_parser import *
 
 @pytest.fixture
 def sample_event():
