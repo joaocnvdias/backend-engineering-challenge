@@ -40,7 +40,7 @@ class TestMain:
  
     def test_readme_example_output_len(self, readme_events_file):
         window_size = 10
-        filtered = iter_and_filter_events(iter_translation_events(readme_events_file))
+        filtered = iter_and_filter_events(iter_translation_events(readme_events_file, ignore_invalid =False))
         result = list(iter_sliding_window_loop(window_size, filtered))
         assert len(result) == len(self.README_EXPECTED)
 
@@ -48,7 +48,7 @@ class TestMain:
         window_size = 10
         output_path = tmp_path / "output.jsonl"
 
-        filtered = iter_and_filter_events(iter_translation_events(readme_events_file))
+        filtered = iter_and_filter_events(iter_translation_events(readme_events_file, ignore_invalid =False))
         results = list(iter_sliding_window_loop(window_size, filtered))
         save_results_to_file(str(output_path), results)
 
