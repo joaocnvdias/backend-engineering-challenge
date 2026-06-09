@@ -18,16 +18,16 @@ python -m unbabel_cli --input_file <path> --window_size <int>
 ```
 Where following are **mandatory parameters:**
 - ```--input_file:``` The location of the input file, including its name and suffix. It must be a .jsonl file. 
-- ```--window_size:``` The size of the time window being considered to compute the average translation time. Must be an integer $>=1$.
+- ```--window_size:``` The size of the time window being considered to compute the average translation time. Must be an integer >=1.
+
+And the following are **optional parameters:**
+- ```--output_file_location:``` The location of the output file created by the application, including its name and suffix. It must be a .jsonl file. If a directory is stated and it doesn't already exist, the application will create it and dump the output file there. **DEFAULT:** *data/output.jsonl*
+- ```--ignore_invalid_line:``` If added to the command line, the application will ignore lines in the input file that raise errors, like lines without json objects or without the necessary keys ('timestamp' and 'duration') and skip them during computation. The default state is to pause the application when we encounter such errors.
 
 **Example:**
 ```
 python -m unbabel_cli --input_file data/events.jsonl --window_size 10
 ```
-And the following are **optional parameters:**
-- ```--output_file_location:``` The location of the output file created by the application, including its name and suffix. It must be a .jsonl file. If a directory is stated and it doesn't already exist, the application will create it and dump the output file there. **DEFAULT:** *data/output.jsonl*
-- ```--ignore_invalid_line:``` If added to the command line, the application will ignore lines in the input file that raise errors, like lines without json objects or without the necessary keys ('timestamp' and 'duration') and skip them during computation. The default state is to pause the application when we encounter such errors.
-
 **Example including optional parameters:**
 ```
 python -m unbabel_cli --input_file data/events.jsonl --window_size 10 --output_file_location data/output_example.jsonl --ignore_invalid_line

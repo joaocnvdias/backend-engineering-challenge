@@ -30,8 +30,8 @@ And outputs a JSONL file with the ```average\_delivery\_time``` for each minute,
 ```
 ## Proposed Solution 
 
-### Time Domain Definiton
-Firstly, we must note that, for each timestamp present in the output, we must consider all of the events that belong in the time domain of ```current_minute - X to current_minute```, where $X$ is the window size defined by the user in the application call. 
+### Time Domain Definition
+Firstly, we must note that, for each timestamp present in the output, we must consider all of the events that belong in the time domain of ```current_minute - X to current_minute```, where ```X``` is the window size defined by the user in the application call. 
 
 We must define if the outer limits of this interval are inclusive or not. This is important for the cases where the translation events are recorded at a timestamp that falls exactly on a minute boundary, that is with no seconds or milliseconds. In such cases, whether that event belongs to the current window or the next is determined solely by the boundary convention, which can produce different outputs.
 
