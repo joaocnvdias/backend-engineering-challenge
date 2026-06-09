@@ -64,7 +64,7 @@ class TestParser:
             ])
         )
 
-        events = iter_translation_events(file)
+        events = iter_translation_events(file, ignore_invalid =False)
 
         first = next(events) 
         assert isinstance(first, dict)
@@ -80,7 +80,7 @@ class TestParser:
             ])
         )
 
-        events = iter_translation_events(file)
+        events = iter_translation_events(file, ignore_invalid =False)
         first = next(events) 
         second = next(events)
         assert first["timestamp"] == "2018-12-26 18:11:08.509654"
@@ -101,6 +101,19 @@ class TestParser:
 
         assert list(event.keys()) == wanted_keys
     
+    def test_malformed_json_raises_error(self, tmp_path):
+        """A line that is not valid JSON should raise JSONDecodeError"""
+        invalid_events = [
+            '{"timestamp": "2018-12-26 18:11:08.509654", "duration": 20}',
+            'not-json',
+            '{"timestamp": "2018-12-26 18:23:19.903159", "duration": 54}',
+        ]
+        file = tmp_path / "events.jsonl"
+        file.write_text("\n".join(invalid_events))
+
+        with pytest.raises(json.JSONDecodeError):
+            list(iter_translation_events(file, ignore_invalid =False))
+    
     def test_input_file_invalid_format(self,tmp_path):
         """
         If the input file has a not-json-object it should raise an error, 
@@ -113,7 +126,7 @@ class TestParser:
         ]
         file = tmp_path / "events.jsonl"
         file.write_text("\n".join(invalid_events))
-        events = iter_translation_events(file)
+        events = iter_translation_events(file, ignore_invalid =False)
 
         with pytest.raises(TypeError, match = "File includes invalid line, expected a JSON object"):
             list(iter_validate_input_lines(events = events, ignore_invalid= False))
@@ -129,7 +142,7 @@ class TestParser:
         ]
         file = tmp_path / "events.jsonl"
         file.write_text("\n".join(invalid_events))
-        events = iter_translation_events(file)
+        events = iter_translation_events(file, ignore_invalid =False)
 
         with pytest.raises(KeyError, match = "File includes a line with a JSON object without the 'timestamp' key"):
             list(iter_validate_input_lines(events = events, ignore_invalid= False))
@@ -145,7 +158,7 @@ class TestParser:
         ]
         file = tmp_path / "events.jsonl"
         file.write_text("\n".join(invalid_events))
-        events = iter_translation_events(file)
+        events = iter_translation_events(file, ignore_invalid =False)
 
         with pytest.raises(KeyError, match = "File includes a line with a JSON object without the 'duration' key"):
             list(iter_validate_input_lines(events = events, ignore_invalid= False))

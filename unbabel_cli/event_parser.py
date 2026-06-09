@@ -25,7 +25,7 @@ def validate_args(args):
         if not any(line.strip() for line in f): #file is empty or only has newline chars
             raise ValueError("Input file is empty")
 
-def iter_translation_events(file_location):
+def iter_translation_events(file_location, ignore_invalid):
     """
     Lazily iterate over translation events stored as JSON Lines.
     The file is read one line at a time and each line is parsed as JSON. 
@@ -39,7 +39,13 @@ def iter_translation_events(file_location):
     """
     with open(file_location, "r", encoding="utf-8") as f:
         for line in f:
-            yield json.loads(line) #load event 1 by 1 
+            try:
+                yield json.loads(line) #load event 1 by 1 
+            except json.JSONDecodeError as e:
+                if ignore_invalid:
+                    print(f"Skipping line. {e}", file=sys.stderr)
+                    continue
+                raise json.JSONDecodeError(f"File includes a line with invalid JSON:", e.doc, e.pos)
 
 def iter_validate_input_lines(events, ignore_invalid):
     """
