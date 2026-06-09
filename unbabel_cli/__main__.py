@@ -1,6 +1,6 @@
-from event_parser import parse_from_cli, validate_args, iter_translation_events, iter_validate_input_lines, iter_and_filter_events
-from window import iter_sliding_window_loop
-from utils import save_results_to_file
+from .event_parser import parse_from_cli, validate_args, iter_translation_events, iter_validate_input_lines, iter_and_filter_events
+from .window import iter_sliding_window_loop
+from .utils import save_results_to_file
 
 def main():
 

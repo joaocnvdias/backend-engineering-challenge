@@ -1,5 +1,5 @@
 from collections import deque
-from utils import floor_to_minutes
+from .utils import floor_to_minutes
 
 def iter_sliding_window_loop(window_size, filtered_events):
     """

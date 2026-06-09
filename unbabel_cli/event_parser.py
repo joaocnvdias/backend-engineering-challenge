@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 import sys
-from utils import timestamp_to_unix
+from .utils import timestamp_to_unix
 
 def parse_from_cli():
     parser = argparse.ArgumentParser()
